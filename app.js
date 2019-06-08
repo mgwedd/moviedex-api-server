@@ -21,14 +21,6 @@ app.use(function validateBearerToken( req, res, next ) {
 });
 
 // ENDPOINT: GET /movie 
-// if results found, modify the response; otherwise, send a 404 to the client.
-// const verifyResultsFound = ( prelimResults, res ) => {
-//     if ( prelimResults.length > 0 ) {
-//         return prelimResults;
-//     } else {
-//         res.status( 404 ).send('No results found that match all search terms.');
-//     }
-// }
 const handleGetMovie = ( req, res ) => {
     const { genre, country, avg_vote } = req.query;
 
@@ -38,6 +30,7 @@ const handleGetMovie = ( req, res ) => {
     if ( genre ) {
         // if there is at least one result for this query, filter the response results by it.
         prelimResults = results.filter( movie => movie.genre.toLowerCase().includes( genre.toLowerCase() ) );
+        // if results found, modify the response; otherwise, send a 404 to the client.
         if ( prelimResults.length > 0 ) {
             results = prelimResults;
         } else {
@@ -47,6 +40,7 @@ const handleGetMovie = ( req, res ) => {
 
     if ( country ) {
         prelimResults = results.filter( movie => movie.country.toLowerCase().includes( country.toLowerCase() ) );
+        // if results found, modify the response; otherwise, send a 404 to the client.
         if ( prelimResults.length > 0 ) {
             results = prelimResults;
         } else {
@@ -56,6 +50,7 @@ const handleGetMovie = ( req, res ) => {
 
     if ( avg_vote ) {
         prelimResults = results.filter( movie => Number( movie.avg_vote ) >= Number( avg_vote ) );
+        // if results found, modify the response; otherwise, send a 404 to the client.
         if ( prelimResults.length > 0 ) {
             results = prelimResults;
         } else {
