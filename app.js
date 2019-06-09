@@ -9,7 +9,8 @@ const app = express();
 
 // Required middlewear for all routes.
 app.use(helmet()); // for blanket security
-app.use(morgan( 'common' )); // for activity logging
+const morganSetting = process.env.NODE_ENV === 'production' ? 'tiny' : 'common'; // minimal logging for prod.
+app.use(morgan(morganSetting));
 app.use(cors());  // for running clients on the same browser as the server
 app.use(function validateBearerToken( req, res, next ) {
     const apiToken = process.env.API_TOKEN;
@@ -19,6 +20,15 @@ app.use(function validateBearerToken( req, res, next ) {
     }
     next(); // auth token and api token match, so proceed to next middlewear
 });
+app.use((error, req, res, next) => {
+    let response;
+    if (process.env.NODE_ENV === 'production') {
+      response = { error: { message: 'Server error' }}
+    } else {
+      response = { error }
+    }
+    res.status( 500 ).json( response );
+}); // hide sensitive server errors when on prod.
 
 // ENDPOINT: GET /movie 
 const handleGetMovie = ( req, res ) => {
@@ -60,6 +70,7 @@ const handleGetMovie = ( req, res ) => {
 
     res.json( results );
 }
+
 app.get('/movie', handleGetMovie);
 // =====================
 
